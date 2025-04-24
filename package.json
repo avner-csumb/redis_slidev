@@ -1,0 +1,20 @@
+{
+  "name": "redis1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev --open",
+    "export": "slidev export",
+    "deploy": "slidev build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "@slidev/cli": "^51.6.0",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
