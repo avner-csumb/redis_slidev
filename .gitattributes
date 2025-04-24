@@ -1,0 +1,14 @@
+# Auto-normalize line endings for cross-platform dev
+* text=auto
+
+# Explicitly enforce LF for known source types
+*.md text eol=lf
+*.ts text eol=lf
+*.js text eol=lf
+*.vue text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.html text eol=lf
+*.css text eol=lf
