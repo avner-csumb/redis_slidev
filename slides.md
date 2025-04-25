@@ -39,3 +39,14 @@ Redis is the archetype of in-memory key–value stores.
 - Powerful Pub/Sub mechanism
 <br>
 <br>
+
+
+---
+
+## Core Data Structures  
+
+- **String**: arbitrary byte values  
+- **Hash**: maps of fields → values  
+- **List**: ordered collections  
+- **Set**: unique, unordered collections  
+- **Sorted Set**: scored, ordered collections  
