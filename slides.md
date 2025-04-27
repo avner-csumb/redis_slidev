@@ -45,6 +45,10 @@ Redis is the archetype of in-memory key–value stores.
 
 ## Core Data Structures  
 
+<br>
+
+Redis supports five different data structures: strings, hashes, lists, sets and ordered sets.
+
 - **String**: arbitrary byte values  
 - **Hash**: maps of fields → values  
 - **List**: ordered collections  
