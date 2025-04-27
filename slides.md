@@ -50,3 +50,15 @@ Redis is the archetype of in-memory key–value stores.
 - **List**: ordered collections  
 - **Set**: unique, unordered collections  
 - **Sorted Set**: scored, ordered collections  
+
+---
+
+## Atomic Operators --- KV Store
+
+<br>
+Strings - O(1) 
+
+- GET key
+- SET key value 
+- EXISTS key 
+- DEL key
