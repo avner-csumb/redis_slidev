@@ -199,7 +199,39 @@ Redis supports five different data structures: strings, hashes, lists, sets and 
 | **Sorted Set** | `ZADD/ZRANGE` | Leaderboards, feeds |
 | **Streams** | `XADD/XREAD` | Append-only event logs |
 
+
 ---
+
+## Memory‑Oriented Caveats (1 / 2)
+
+<br>
+
+> Redis is fast **because** everything lives in RAM—here’s how to keep it that way.
+
+<br>
+
+| Lever | Why it matters | Quick tips |
+|-------|----------------|-----------|
+| **`maxmemory`** | Hard ceiling for RAM use | Size for worst‑case + headroom • Monitor with `INFO MEMORY` |
+| **Eviction policy** | Decides *which* keys disappear when full | `allkeys-lru` (smart cache) • `volatile-ttl` (expire‑only) • Benchmark with `redis-benchmark --lru` |
+| **Big‑key anti‑pattern** | 5 MB key blocks event loop, slows replicas & AOF rewrite | Shard large hashes/lists • Prefer many small keys |
+---
+
+## Memory‑Oriented Caveats (2 / 2)
+
+<br>
+
+| Lever | Why it matters | Quick tips |
+|-------|----------------|-----------|
+| **Memory‑efficient structures** | Same task, less RAM | Bitmaps for flags • HyperLogLog for cardinality • Bloom filters for “probable existence” |
+| **Diagnostics** | Spot trouble early | `MEMORY USAGE <key>` • `MEMORY DOCTOR` • `MEMORY STATS` |
+
+<br>
+
+**Rule of thumb:** *If a key can’t be read in ‹1 ms or fits on one screen, it’s probably too big—break it up or pick a leaner structure.*
+
+---
+
 
 ## Hands-on: Basic Commands
 
@@ -245,6 +277,39 @@ SUBSCRIBE classroom
 PUBLISH classroom "Hello CST 363"
 ```
 
+
+---
+
+## Redis Persistence & Durability
+
+<br>
+
+> **“Isn’t everything lost on reboot?”**
+
+| Mechanism | What it does | Write frequency | Disk footprint | Worst-case data loss* |
+|-----------|--------------|-----------------|----------------|-----------------------|
+| **RDB snapshot** | Forks the process and saves a compressed dump file (`.rdb`) | On a schedule (e.g., `save 900 1`, `save 300 10`) | Small, binary & compressed | All writes since last snapshot |
+| **AOF (Append-Only File)** | Appends every write to a log and replays it on restart | `appendfsync always` \| `everysec` \| `no` | Larger, plaintext stream | 0 s with `always`; ≤ 1 s with `everysec` |
+
+<br>
+
+\*“Data loss” here means writes not yet persisted if the server crashes.
+
+---
+
+### Hybrid best‑practice
+
+<br>
+
+```ini
+appendonly yes          # enable AOF
+appendfsync everysec    # fsync once per second
+save 3600 1             # RDB snapshot every hour
+```
+
+<br>
+
+*Blend near‑zero data loss (AOF) with compact hourly snapshots (RDB) for quick restarts & cheaper off‑box backups.*
 
 ---
 
