@@ -237,6 +237,13 @@ Redis supports five different data structures: strings, hashes, lists, sets and 
 
 <br>
 
+Access the Redis command line interface (redis-cli) with:<br>
+```bash
+docker exec -it my-redis redis-cli
+```
+
+<br>
+
 1. **Strings & counters**
 
 ```bash
