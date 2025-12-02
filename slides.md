@@ -1,5 +1,4 @@
 ---
-# You can also start simply with 'default'
 theme: default
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
@@ -182,11 +181,16 @@ Redis Streams + consumer-groups for ordered, replayable log
 
 Redis supports five different data structures: strings, hashes, lists, sets and ordered sets --- regardless of the type, a value is accessed by a key. 
 
+
+<v-clicks>
+
 - **String**: arbitrary byte values  
 - **Hash**: maps of fields → values  
 - **List**: ordered collections  
 - **Set**: unique, unordered collections  
 - **Sorted Set**: scored, ordered collections  
+
+</v-clicks>
 
 ---
 
@@ -304,7 +308,7 @@ PUBLISH classroom "Hello CST 363"
 
 ---
 
-### Hybrid best‑practice
+## Hybrid best‑practice
 
 <br>
 
