@@ -25,32 +25,39 @@ mdc: true
 CST 363
 
 
-<!-- ---
-transition: fade-out -->
 ---
 
 ## What is Redis?
 
-<br>
+<div class="p-3">
+
+<v-click>
 
 ### **RE**mote **DI**ctionary **S**erver
 
+</v-click>
+
+</div>
+
 <!-- Redis is the archetype of in-memory key–value stores. -->
 
-- An open-source, in-memory, single-threaded "data structure store"
-  - allows for the storage and retrieval of data structures, such as strings, hashes, lists, sets, and more
+<v-clicks depth="2">
+
+- A NoSQL (non-relational) in-memory database
+  - one event loop → very simple concurrency model
+  - "data structure store": allows for the storage and retrieval of data structures, such as strings, hashes, lists, sets, and more
   - speedy --- micro-seconds vs. the milli-seconds we're used to with disk-based stores.
 - Known for its high performance, scalability, and versatility
-- Virtually every production system uses Redis (or an equivalent) for caching, sessions, rate-limiting, real-time messaging, and lightweight queues.
-  - A staple of "database adjacencies."
-<!-- - Redis's persistence modes (RDB snapshots vs. AOF logs) highlight trade-offs between durability, performance, and recovery  -->
-<!-- - Powerful Pub/Sub mechanism -->
-<!-- <br>
-<br> -->
+- Many production system uses Redis (or an equivalent) for caching, sessions, rate-limiting, real-time messaging, and lightweight queues.
+
+</v-clicks>
+
+<v-click>
 
 ![](/redis-logo.png){width=150px lazy}
 
-<!-- This is a [red text]{style="color:red"} :inline-component{prop="value"} -->
+</v-click>
+
 
 ---
 
@@ -58,12 +65,19 @@ transition: fade-out -->
 
 <br>
 
-- 2009 - Salvatore Sanfilippo, an Italian developer, found that MySQL could not provide the necessary performance for real-time web analytics
+<v-clicks>
+
+- 2009 --- Salvatore Sanfilippo, an Italian developer, found that MySQL could not provide the necessary performance for real-time web analytics
 - Went from a small personal project from Sanfilippo, to being an industry standard for in-memory data storage.
+
+</v-clicks>
+
+
+<v-click>
 
 ![](/sal.jpg){width=400px lazy}
 
-
+</v-click>
 
 ---
 
@@ -71,44 +85,86 @@ transition: fade-out -->
 
 <br>
 
-| Aspect         | SQL Databases                                       | Redis                                                  |
+| **Aspect**         | **SQL Databases**                                       | **Redis**                                                  |
 |----------------|------------------------------------------------------|--------------------------------------------------------|
-| Data Model     | Relational model with structured tables              | NoSQL key-value store with support for multiple data structures (e.g., lists, sets, hashes, streams) |
-| Storage        | Disk-based storage with caching layers for performance | In-memory storage for speed, with optional disk persistence (RDB, AOF) |
-| Query Language | Uses SQL (Structured Query Language)                 | Uses its own command set (e.g., GET, SET, HGETALL); no SQL |
+| Data Model     | Relational model with structured tables              | NoSQL key-value store with support for multiple data structures |
+| Storage        | Disk-based storage with caching layers for performance | In-memory storage for speed, with optional disk persistence |
+| Query Language | Uses SQL                | Uses its own command set (e.g., `GET`, `SET`, `HGETALL`); no SQL |
 | Use Cases      | Structured data, complex queries, transactional integrity, relational models | Caching, real-time analytics, messaging, fast-access scenarios |
 
 ---
 
 ## Where Traditional RDBMSs Struggle (1 of 5)
 
-<br>
+<div class="p-3">
+
+<v-click>
 
 **Hot-Read Caching**
 - A small subset of data ("hot keys" or documents) is read far more often (10x - 100x) than the rest.
 - Every cache-miss triggers planner, optimizer, disk I/O (~1–3 ms each)
+  - Query planning + disk read → slower than RAM
 
-<br> 
+</v-click>
+
+</div>
+
+
+<div class="p-3">
+
+<v-click>
 
 **With Redis:**
 - `GET user:1234` always sub-millisecond
 - Built-in "Least Recently Used" (LRU) eviction, no extra query planning
+  - Redis only executes direct, deterministic operations on known data structures
+
+</v-click>
+
+
+</div>
+
 
 ---
 
 ## Where Traditional RDBMSs Struggle (2 of 5)
 
-<br>
+<div class="p-3">
+
+<v-click>
 
 **High-Frequency Counters & Concurrency**
-- Atomic `UPDATE … SET counter = counter + 1` at very high queries per second (QPS)
+- Atomic `UPDATE … SET counter = counter + 1` at very high queries per second
 - Row-level locks slow things down under heavy load.
-- WAL/journaling thrash + autovacuum bloat slow sustained writes
+- WAL/journaling thrash + autovacuum bloat → slow sustained writes
+
+</v-click>
+
+</div>
+
+
+<br>
+
+<v-click>
+
+<blockquote>
+  PostgreSQL must guarantee ACID correctness
+</blockquote>
+
+</v-click>
+
 
 <br> 
 
+<v-click>
+
+
 **With Redis:**
 - `INCR page:view:5678` is lock-free & `O(1)`
+  - single-threaded architecture
+
+
+</v-click>
 
 ---
 
@@ -116,16 +172,25 @@ transition: fade-out -->
 
 <br>
 
+
+<v-click>
+
 **Ephemeral State & Session Management**
 - Short-lived data (sessions, feature-flags, temp locks) that expires on its own.
 - Frequent `INSERT`/`DELETE` churn, index maintenance
 - Table bloat → expensive `VACUUM`, fragmentation
 
+</v-click>
+
 <br> 
 
+<v-click>
+
 **With Redis:**
-- Keys with `TTL` auto-expire; no background `GC`
+- Keys with `TTL` auto-expire; no background garbage collection
 - In-memory list, set, hash structures for fast lookups
+
+</v-click>
 
 ---
 
@@ -133,10 +198,10 @@ transition: fade-out -->
 
 <br>
 
-**Event Streaming & Pub/Sub**
+**Event Streaming & Publisher/Subscriber**
 
 - On-disk queues or tailable cursors lack true ordering & replay
-- Notifications don’t scale to many consumers
+- Notifications don't scale to many consumers
 - No built-in consumer groups or at-least-once delivery guarantees
 
 <br> 
@@ -153,25 +218,13 @@ Redis Streams + consumer-groups for ordered, replayable log
 
 **Heavy Analytical & Batch Workloads**
 - Large scans, complex joins or aggregations, real-time analytics.
-- Long-running queries lock resources, contend with OLTP traffic, and can overwhelm primary nodes.
+- Long-running queries lock resources, contend with transaction processing (OLTP) traffic, and can overwhelm primary nodes.
 
 <br> 
 
 **With Redis:**
 - Can use RedisTimeSeries or Lua scripts for near-real-time stats
 
-<!-- --- -->
-
-<!-- ## History
-
-- 2009 - Salvatore Sanfilippo, an Italian developer, found that MySQL could not provide the necessary performance for real-time web analytics
-- Went from a small personal project from Sanfilippo, to being an industry standard for in-memory data storage.
-
-<br>
-
-## Threading
-
-- Redis is a single threaded process and will, at most, consume two cores if you have persistence enabled. -->
 
 ---
 
@@ -179,13 +232,14 @@ Redis Streams + consumer-groups for ordered, replayable log
 
 <br>
 
-Redis supports five different data structures: strings, hashes, lists, sets and ordered sets --- regardless of the type, a value is accessed by a key. 
+Redis supports **5** different data structures --- regardless of the type, a value is accessed by a key
 
 
 <v-clicks>
 
 - **String**: arbitrary byte values  
-- **Hash**: maps of fields → values  
+- **Hash**: represents a map between string fields and string values
+  - like a Python dictionary  
 - **List**: ordered collections  
 - **Set**: unique, unordered collections  
 - **Sorted Set**: scored, ordered collections  
@@ -201,7 +255,6 @@ Redis supports five different data structures: strings, hashes, lists, sets and 
 | **List** | `RPUSH/LRANGE` | Log buffers, task queues |
 | **Set** | `SADD/SMEMBERS` | Unique tags |
 | **Sorted Set** | `ZADD/ZRANGE` | Leaderboards, feeds |
-| **Streams** | `XADD/XREAD` | Append-only event logs |
 
 
 ---
@@ -210,15 +263,15 @@ Redis supports five different data structures: strings, hashes, lists, sets and 
 
 <br>
 
-> Redis is fast **because** everything lives in RAM—here’s how to keep it that way.
+> Redis is fast **because** everything lives in RAM --- here’s how to keep it that way:
 
 <br>
 
 | Lever | Why it matters | Quick tips |
 |-------|----------------|-----------|
-| **`maxmemory`** | Hard ceiling for RAM use | Size for worst‑case + headroom • Monitor with `INFO MEMORY` |
-| **Eviction policy** | Decides *which* keys disappear when full | `allkeys-lru` (smart cache) • `volatile-ttl` (expire‑only) • Benchmark with `redis-benchmark --lru` |
-| **Big‑key anti‑pattern** | 5 MB key blocks event loop, slows replicas & AOF rewrite | Shard large hashes/lists • Prefer many small keys |
+| **`maxmemory`** | Hard ceiling for RAM use | Size for worst‑case + headroom <br> Monitor with `INFO MEMORY` |
+| **Eviction policy** | Decides *which* keys disappear when full | `allkeys-lru` (smart cache) <br> `volatile-ttl` (expire‑only) |
+| **Big‑key anti‑pattern** | 5 MB key blocks event loop, slows replicas | Prefer many small keys |
 ---
 
 ## Memory‑Oriented Caveats (2 / 2)
@@ -227,8 +280,8 @@ Redis supports five different data structures: strings, hashes, lists, sets and 
 
 | Lever | Why it matters | Quick tips |
 |-------|----------------|-----------|
-| **Memory‑efficient structures** | Same task, less RAM | Bitmaps for flags • HyperLogLog for cardinality • Bloom filters for “probable existence” |
-| **Diagnostics** | Spot trouble early | `MEMORY USAGE <key>` • `MEMORY DOCTOR` • `MEMORY STATS` |
+| **Memory‑efficient structures** | Same task, less RAM | Bitmaps for flags <br> HyperLogLog for cardinality <br> Bloom filters for "probable existence" |
+| **Diagnostics** | Spot trouble early | `MEMORY USAGE <key>` <br> `MEMORY DOCTOR` <br> `MEMORY STATS` |
 
 <br>
 
@@ -243,7 +296,7 @@ Redis supports five different data structures: strings, hashes, lists, sets and 
 
 Access the Redis command line interface (redis-cli) with:<br>
 ```bash
-docker exec -it my-redis redis-cli
+docker exec -it cst363-redis redis-cli
 ```
 
 <br>
@@ -275,7 +328,7 @@ LRANGE recent_log 0 -1
 
 ```bash
 SADD online_users u1 u2 u3
-SCARD online_users
+SCARD online_users 
 SISMEMBER online_users u2
 ```
 <br>
@@ -284,6 +337,7 @@ SISMEMBER online_users u2
 
 ```bash
 SUBSCRIBE classroom
+
 # in another shell
 PUBLISH classroom "Hello CST 363"
 ```
@@ -328,6 +382,8 @@ save 3600 1             # RDB snapshot every hour
 
 <br>  
 
+<v-clicks depth="2">
+
 -  **Read-through cache**  
   - Flask route hits Redis → miss triggers Postgres query → result cached with TTL.  
 - **Write-behind / event sourcing**  
@@ -337,6 +393,8 @@ save 3600 1             # RDB snapshot every hour
 - **Pub/Sub fan-out** for web-socket notifications while Postgres stays source of truth.
   - Publisher sends one message to a channel 
   - Redis instantly "fans out" (copies) that message to every active subscriber on that channel.  
+
+</v-clicks>
 
 ---
 layout: image-right
@@ -407,6 +465,10 @@ backgroundSize: contain
 
 <br>
 
+
+<v-clicks depth="2">
+
+
 - **Pub/Sub**  
   - `r.publish("pbp_live", payload_json)`  
   - Flask SSE subscribes → pushes to browsers  
@@ -416,22 +478,34 @@ backgroundSize: contain
   - Quick lookup of current score/state
 
 
+</v-clicks>
+
+
 ---
 
 ## Postgres: Durable Log  
 
 <br>
 
+<v-clicks>
+
 - Table `pbp(ts timestamptz, game_id text, ...)`  
 - Batched writes (`200` events per COMMIT)  
 - Index on `(game_id, ts)` for fast history queries  
 - Enables audit, replay, analytics after the demo
+
+</v-clicks>
+
 
 ---
 
 ## Flask + SSE Front-End  
 
 <br>
+
+
+<v-clicks>
+
 
 - **`/`** → renders Bootstrap dashboard  
 - **`/events`** → SSE endpoint using `redis.pubsub().listen()`  
@@ -443,6 +517,9 @@ backgroundSize: contain
 - Updates:  
   - Scoreboard cards per game  
   - Live feed list (last 100 plays)
+
+</v-clicks>
+
 
 ---
 
@@ -464,12 +541,15 @@ backgroundSize: contain
 
 <br>
 
+<v-clicks>
+
 - **Scale fan-out**: Redis Streams, Kafka, or WebSockets  
 - **Async I/O**: FastAPI/Quart + async Redis client  
 - **Historical API**: add `/history?game_id=` querying Postgres  
 - **Schema enhancements**: numeric time fields, PKs, constraints  
 - **Simplify demo**: flatten+sort or `heapq.merge` for static CSV
 
+</v-clicks>
 
 
 ---
