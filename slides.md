@@ -389,7 +389,7 @@ save 3600 1             # RDB snapshot every hour
 - **Write-behind / event sourcing**  
   - App writes to Redis **Stream**; separate worker persists to Postgres asynchronously.  
 - **Real-time counters**  
-  - `INCR` in Redis, nightly ETL to Postgres for durable analytics.  
+  - `INCR` in Redis, nightly extract/transform/load (ETL) to Postgres for durable analytics.  
 - **Pub/Sub fan-out** for web-socket notifications while Postgres stays source of truth.
   - Publisher sends one message to a channel 
   - Redis instantly "fans out" (copies) that message to every active subscriber on that channel.  
